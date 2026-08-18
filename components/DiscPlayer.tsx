@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useMusic } from "@/lib/music-context";
+import { getAssetPath } from "@/lib/utils";
 import {
   Play,
   Pause,
@@ -148,7 +149,7 @@ export const DiscPlayer: React.FC = () => {
     }
   };
 
-  const activeArtwork = currentTrack?.coverUrl || "/images/disc-infinity.png";
+  const activeArtwork = getAssetPath(currentTrack?.coverUrl || "/images/disc-infinity.png");
   const progressRatio = duration > 0 ? Math.min(1, Math.max(0, currentTime / duration)) : 0;
 
   return (

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useMusic } from "@/lib/music-context";
+import { getAssetPath } from "@/lib/utils";
 
 const navItems = [
   { label: "GRAPH", href: "#graph" },
@@ -83,7 +84,7 @@ export const Navbar: React.FC = () => {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={currentTrack.coverUrl || "/images/disc-infinity.png"}
+                src={getAssetPath(currentTrack.coverUrl || "/images/disc-infinity.png")}
                 alt="Vinyl Disc"
                 className="w-full h-full object-cover"
               />
