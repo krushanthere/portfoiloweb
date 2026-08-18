@@ -1,21 +1,26 @@
-<div align="center">
+<h1 align="center">✦ Krushanta Podha // Interactive 3D Portfolio</h1>
 
-# ✦ Krushanta Podha // Interactive 3D Portfolio
+<p align="center">
+  <strong>Personal developer portfolio featuring WebGL shaders, 3D particle systems, ASCII morphing, and an interactive vinyl disc player.</strong>
+</p>
 
-**Personal developer portfolio featuring WebGL shaders, 3D particle systems, ASCII morphing, and an interactive vinyl disc player.**
+<p align="center">
+  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-16.3.1-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 16" /></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19.2.8-blue?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React 19" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://threejs.org/"><img src="https://img.shields.io/badge/Three.js-0.185-black?style=for-the-badge&logo=threedotjs&logoColor=white" alt="Three.js" /></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS v4" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-All_Rights_Reserved-red.svg?style=for-the-badge" alt="License: Proprietary" /></a>
+</p>
 
-[![Next.js 16](https://img.shields.io/badge/Next.js-16.3.1-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![React 19](https://img.shields.io/badge/React-19.2.8-blue?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Three.js](https://img.shields.io/badge/Three.js-0.185-black?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org/)
-[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License: Proprietary](https://img.shields.io/badge/License-All_Rights_Reserved-red.svg?style=for-the-badge)](LICENSE)
-
-[**Live Website**](https://krushanta.dev) • [**Disc Player**](https://krushanta.dev/player) • [**GitHub**](https://github.com/krushanthere) • [**LinkedIn**](https://www.linkedin.com/in/krushantapodha-8b97042b4/)
+<p align="center">
+  <a href="https://krushanta.dev"><strong>Live Website</strong></a> •
+  <a href="https://krushanta.dev/player"><strong>Disc Player</strong></a> •
+  <a href="https://github.com/krushanthere"><strong>GitHub</strong></a> •
+  <a href="https://www.linkedin.com/in/krushantapodha-8b97042b4/"><strong>LinkedIn</strong></a>
+</p>
 
 ---
-
-</div>
 
 ## 🌌 Overview
 
