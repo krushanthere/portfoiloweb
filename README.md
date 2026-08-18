@@ -104,4 +104,4 @@ This repository and all associated assets are private and proprietary. No permis
 - **Portfolio**: [krushanta.dev](https://krushanta.dev)
 - **GitHub**: [@krushanthere](https://github.com/krushanthere)
 - **LinkedIn**: [Krushanta Podha](https://www.linkedin.com/in/krushantapodha-8b97042b4/)
-- **Email**: [contact@krushanta.dev](mailto:contact@krushanta.dev)
+- **Email**: [krushantapodha@gmail.com](mailto:krushantapodha@gmail.com)

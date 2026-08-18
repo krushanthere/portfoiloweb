@@ -74,6 +74,6 @@ export const contact = {
   links: {
     github: "https://github.com/krushanthere",
     linkedin: "https://www.linkedin.com/in/krushanta-podha-8b97042b4/",
-    email: "mailto:contact@krushanta.dev",
+    email: "mailto:krushantapodha@gmail.com",
   },
 };
