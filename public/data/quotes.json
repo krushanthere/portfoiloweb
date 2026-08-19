@@ -1,62 +1,737 @@
 [
-  { "id": 1, "text": "May the Force be with you.", "source": "Star Wars" },
-  { "id": 2, "text": "I'll be back.", "source": "The Terminator" },
-  { "id": 3, "text": "Here's looking at you, kid.", "source": "Casablanca" },
-  { "id": 4, "text": "Houston, we have a problem.", "source": "Apollo 13" },
-  { "id": 5, "text": "You talking to me?", "source": "Taxi Driver" },
-  { "id": 6, "text": "E.T. phone home.", "source": "E.T." },
-  { "id": 7, "text": "Bond. James Bond.", "source": "Dr. No" },
-  { "id": 8, "text": "Show me the money!", "source": "Jerry Maguire" },
-  { "id": 9, "text": "You can't handle the truth!", "source": "A Few Good Men" },
-  { "id": 10, "text": "Say hello to my little friend!", "source": "Scarface" },
-  { "id": 11, "text": "Hasta la vista, baby.", "source": "Terminator 2" },
-  { "id": 12, "text": "Here's Johnny!", "source": "The Shining" },
-  { "id": 13, "text": "I'm king of the world!", "source": "Titanic" },
-  { "id": 14, "text": "My precious.", "source": "The Lord of the Rings" },
-  { "id": 15, "text": "I see dead people.", "source": "The Sixth Sense" },
-  { "id": 16, "text": "Open the pod bay doors, HAL.", "source": "2001: A Space Odyssey" },
-  { "id": 17, "text": "Yo, Adrian!", "source": "Rocky" },
-  { "id": 18, "text": "There's no place like home.", "source": "The Wizard of Oz" },
-  { "id": 19, "text": "To infinity and beyond!", "source": "Toy Story" },
-  { "id": 20, "text": "Why so serious?", "source": "The Dark Knight" },
-  { "id": 21, "text": "Go ahead, make my day.", "source": "Sudden Impact" },
-  { "id": 22, "text": "I am Iron Man.", "source": "Avengers: Endgame" },
-  { "id": 23, "text": "Carpe diem. Seize the day, boys.", "source": "Dead Poets Society" },
-  { "id": 24, "text": "Nobody puts Baby in a corner.", "source": "Dirty Dancing" },
-  { "id": 25, "text": "We rob banks.", "source": "Bonnie and Clyde" },
-  { "id": 26, "text": "I feel the need for speed!", "source": "Top Gun" },
-  { "id": 27, "text": "Elementary, my dear Watson.", "source": "Sherlock Holmes" },
-  { "id": 28, "text": "Keep your friends close, enemies closer.", "source": "The Godfather II" },
-  { "id": 29, "text": "You had me at hello.", "source": "Jerry Maguire" },
-  { "id": 30, "text": "It's alive! It's alive!", "source": "Frankenstein" },
-  { "id": 31, "text": "Shaken, not stirred.", "source": "Goldfinger" },
-  { "id": 32, "text": "Snap out of it!", "source": "Moonstruck" },
-  { "id": 33, "text": "We'll always have Paris.", "source": "Casablanca" },
-  { "id": 34, "text": "Rosebud.", "source": "Citizen Kane" },
-  { "id": 35, "text": "You're gonna need a bigger boat.", "source": "Jaws" },
-  { "id": 36, "text": "Life is like a box of chocolates.", "source": "Forrest Gump" },
-  { "id": 37, "text": "They call me Mister Tibbs!", "source": "In the Heat of the Night" },
-  { "id": 38, "text": "Made it, Ma! Top of the world!", "source": "White Heat" },
-  { "id": 39, "text": "Forget it, Jake, it's Chinatown.", "source": "Chinatown" },
-  { "id": 40, "text": "I am your father.", "source": "The Empire Strikes Back" },
-  { "id": 41, "text": "There's no crying in baseball!", "source": "A League of Their Own" },
-  { "id": 42, "text": "If you build it, he will come.", "source": "Field of Dreams" },
-  { "id": 43, "text": "Winter is coming.", "source": "Game of Thrones" },
-  { "id": 44, "text": "I am the danger.", "source": "Breaking Bad" },
-  { "id": 45, "text": "Not all who wander are lost.", "source": "The Lord of the Rings" },
-  { "id": 46, "text": "Just keep swimming.", "source": "Finding Nemo" },
-  { "id": 47, "text": "With great power comes great responsibility.", "source": "Spider-Man" },
-  { "id": 48, "text": "Frankly, my dear, I don't give a damn.", "source": "Gone with the Wind" },
-  { "id": 49, "text": "I make him an offer he can't refuse.", "source": "The Godfather" },
-  { "id": 50, "text": "I'm walking here! I'm walking here!", "source": "Midnight Cowboy" },
-  { "id": 51, "text": "Round up the usual suspects.", "source": "Casablanca" },
-  { "id": 52, "text": "I'll have what she's having.", "source": "When Harry Met Sally" },
-  { "id": 53, "text": "Greed, for lack of a better word, is good.", "source": "Wall Street" },
-  { "id": 54, "text": "What we've got here is failure to communicate.", "source": "Cool Hand Luke" },
-  { "id": 55, "text": "Fasten your seatbelts. It's a bumpy night.", "source": "All About Eve" },
-  { "id": 56, "text": "Life finds a way.", "source": "Jurassic Park" },
-  { "id": 57, "text": "Live long and prosper.", "source": "Star Trek" },
-  { "id": 58, "text": "Wakanda forever!", "source": "Black Panther" },
-  { "id": 59, "text": "Bazinga!", "source": "The Big Bang Theory" },
-  { "id": 60, "text": "I solemnly swear that I am up to no good.", "source": "Harry Potter" }
+  {
+    "id": 1,
+    "text": "Organic chemistry is the chemistry of carbon compounds. Biochemistry is the study of carbon compounds that crawl.",
+    "source": "Mike Adams"
+  },
+  {
+    "id": 2,
+    "text": "I never think about the future. It comes soon enough.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 3,
+    "text": "We were flying over America and suddenly I saw snow, the first snow we ever saw from orbit. I have never visited America, but I imagined that the arrival of autumn and winter is the same there as in other places, and the process of getting ready for them is the same. And then it struck me that we are all children of our Earth.",
+    "source": "Aleksandr Aleksandrov"
+  },
+  {
+    "id": 4,
+    "text": "The purpose of life is the investigation of the Sun, the Moon, and the heavens.",
+    "source": "Anaxagoras"
+  },
+  {
+    "id": 5,
+    "text": "The source from which existing things derive their existence is also that to which they return at their destruction.",
+    "source": "Anaximander"
+  },
+  {
+    "id": 6,
+    "text": "Give me a firm place to stand and I will move the Earth.",
+    "source": "Archimedes"
+  },
+  {
+    "id": 7,
+    "text": "Before another century is done it will be hard for people to imagine a time when humanity was confined to one world, and it will seem to them incredible that there was ever anybody who doubted the value of space and wanted to turn his or her back on the universe.",
+    "source": "Isaac Asimov"
+  },
+  {
+    "id": 8,
+    "text": "The universe is a pretty thing, a real pretty thing.",
+    "source": "Keystone Astronomers"
+  },
+  {
+    "id": 9,
+    "text": "What we have learned is like a handful of earth. What we have yet to learn is like the whole world.",
+    "source": "Avvaiyar"
+  },
+  {
+    "id": 10,
+    "text": "I would live to study, and not study to live.",
+    "source": "Francis Bacon"
+  },
+  {
+    "id": 11,
+    "text": "Science is but an image of the truth.",
+    "source": "Francis Bacon"
+  },
+  {
+    "id": 12,
+    "text": "Every answer given arouses new questions. The progress of science is matched by an increase in the hidden and mysterious.",
+    "source": "Leo Baeck"
+  },
+  {
+    "id": 13,
+    "text": "The quick harvest of applied science is the useable process, the medicine, the machine. The shy fruit of pure science is understanding.",
+    "source": "Lincoln Barnett"
+  },
+  {
+    "id": 14,
+    "text": "Frequently on the lunar surface I said to myself, 'This is the Moon, that is the Earth. I'm really here, I'm really here!",
+    "source": "Alan Bean"
+  },
+  {
+    "id": 15,
+    "text": "In space everything is different, you sleep on the ceiling.",
+    "source": "Anatoli Berezovoy"
+  },
+  {
+    "id": 16,
+    "text": "We flew throughout the summer and fall and the start of winter. At first the whiteness gave way to the green of summer, and then gold covered the fields and forests, and then the whiteness again.",
+    "source": "Anatoli Berezovoy"
+  },
+  {
+    "id": 17,
+    "text": "Mathematics is the codified body of all logical thought.",
+    "source": "George David Birkhoff"
+  },
+  {
+    "id": 18,
+    "text": "To see a world in a grain of sand, and a heaven in a wild flower, hold infinity in the palm of your hand, and eternity in an hour.",
+    "source": "William Blake (Hamlet)"
+  },
+  {
+    "id": 19,
+    "text": "What is now proved was once only imagin'd.",
+    "source": "Blake"
+  },
+  {
+    "id": 20,
+    "text": "In some sense man is a microcosm of the universe; therefore what man is, is a clue to the universe. We are enfolded in the universe.",
+    "source": "David Bohm"
+  },
+  {
+    "id": 21,
+    "text": "A great truth is a truth whose opposite is also a great truth.",
+    "source": "Niels Bohr"
+  },
+  {
+    "id": 22,
+    "text": "How wonderful that we have met with a paradox. Now we have some hope of making progress.",
+    "source": "Niels Bohr"
+  },
+  {
+    "id": 23,
+    "text": "'Impossible' is not a scientific term.",
+    "source": "Vanna Bonta"
+  },
+  {
+    "id": 24,
+    "text": "When I had satisfied myself that no star of that kind had ever shone before, I was led into such perplexity by the unbelievability of the thing that I began to doubt the faith of my own eyes.",
+    "source": "Tycho Brahe"
+  },
+  {
+    "id": 25,
+    "text": "Progress in science depends on new techniques, new discoveries and new ideas, probably in that order.",
+    "source": "Sydney Brenner"
+  },
+  {
+    "id": 26,
+    "text": "The crux is that the vast majority of the mass of the universe seems to be missing.",
+    "source": "William J. Broad"
+  },
+  {
+    "id": 27,
+    "text": "That is the essence of science: ask an impertinent question, and you are on the way to the pertinent answer.",
+    "source": "Jacob Bronowski"
+  },
+  {
+    "id": 28,
+    "text": "Life is the art of drawing sufficient conclusions from insufficient premises.",
+    "source": "Samuel Butler"
+  },
+  {
+    "id": 29,
+    "text": "I don't pretend to understand the universe. It's a great deal bigger than I am.",
+    "source": "Thomas Carlyle"
+  },
+  {
+    "id": 30,
+    "text": "Why did not somebody teach me the constellations, and make me at home in the starry heavens, which are always overhead, and which I don't half know to this day?",
+    "source": "Thomas Carlyle"
+  },
+  {
+    "id": 31,
+    "text": "The aim of science is to discover and illuminate truth. And that, I take it, is the aim of literature, where biography or history or fiction. It seems to me, then, that there can be no separate literature of science.",
+    "source": "Rachel Carson"
+  },
+  {
+    "id": 32,
+    "text": "We hope someday, having solved the problems we face, to join a community of galactic civilizations.",
+    "source": "Jimmy Carter"
+  },
+  {
+    "id": 33,
+    "text": "The only way of discovering the limits of the possible is to venture a little way past them into the impossible.",
+    "source": "Arthur C. Clarke"
+  },
+  {
+    "id": 34,
+    "text": "The way of progress is neither swift nor easy.",
+    "source": "Marie Curie"
+  },
+  {
+    "id": 35,
+    "text": "Be less curious about people and more curious about ideas.",
+    "source": "Marie Curie"
+  },
+  {
+    "id": 36,
+    "text": "To someone who could grasp the universe from a unified standpoint the entire creation would appear as a unique truth and necessity.",
+    "source": "J. d'Alembert"
+  },
+  {
+    "id": 37,
+    "text": "That star is not on the chart!",
+    "source": "Heinrich d'Arrest"
+  },
+  {
+    "id": 38,
+    "text": "Science is the meeting place of two kinds of poetry: the poetry of thought and the poetry of action.",
+    "source": "George Agostinho Da Dilva"
+  },
+  {
+    "id": 39,
+    "text": "Nothing before had ever made me thoroughly realize, those I had read various scientific books, that science consists in grouping facts so that general laws or conclusions may be drawn from them.",
+    "source": "Charles Darwin"
+  },
+  {
+    "id": 40,
+    "text": "It is not the strongest of the species that survives, nor the most intelligent, but the one most responsive to change.",
+    "source": "Charles Darwin"
+  },
+  {
+    "id": 41,
+    "text": "No human investigation can be called real science if it cannot be demonstrated mathematically.",
+    "source": "Leonardo da Vinci"
+  },
+  {
+    "id": 42,
+    "text": "Moving in space, the atoms originally were individual units, but inevitable they began to collide with each other, and in cases where their shapes were such as to permit them to interlock, they began to form clusters. Water, air, fire, and earth, these are simply different clusters of the changeless atoms.",
+    "source": "Democritus"
+  },
+  {
+    "id": 43,
+    "text": "It is not enough to have a good mind; the main thing is to use it well.",
+    "source": "Rene Descartes"
+  },
+  {
+    "id": 44,
+    "text": "Every great advance in science has issued from a new audacity of imagination.",
+    "source": "John Dewey"
+  },
+  {
+    "id": 45,
+    "text": "Come algebra, anatomy, astronomy, biology, chemistry, geology, geometry, mathematics, meteorology, mineralogy, oceanography, paleontology, physics, psychology, sociology, trigonometry, and zoology!",
+    "source": "Peter Dickinson"
+  },
+  {
+    "id": 46,
+    "text": "In space you can hang your clothes anywhere.",
+    "source": "R.L. Dietz"
+  },
+  {
+    "id": 47,
+    "text": "For us physicists, the distinction between past, present, and future is only an illusion.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 48,
+    "text": "Things should be made as simple as possible but not simpler.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 49,
+    "text": "Imagination is more important than knowledge.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 50,
+    "text": "Pure logical thinking cannot yield us any knowledge of the empirical world; all knowledge of reality starts from experience and ends in it.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 51,
+    "text": "What science strives for is an utmost acuteness and clarity of concepts as regards their mutual relation and their correspondence to sensory data.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 52,
+    "text": "One thing I have learned in a long life, that all our science, measured against reality, is primitive and childlike.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 53,
+    "text": "The whole of science is nothing more than a refinement of everyday thinking.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 54,
+    "text": "Most of the fundamental ideas of science are essentially simple, and may, as a rule, be express in a language comprehensible to everyone.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 55,
+    "text": "I have no special talents. I am only passionately curious.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 56,
+    "text": "Science is the attempt to make the chaotic diversity of our sense-experiments correspond to a logically uniform system of thought.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 57,
+    "text": "No amount of experimentation can ever prove me right; a single experiment can prove me wrong.",
+    "source": "Albert Einstein"
+  },
+  {
+    "id": 58,
+    "text": "The end of all our exploring will be to arrive where we started.",
+    "source": "T.S. Eliot"
+  },
+  {
+    "id": 59,
+    "text": "A day is a miniature eternity.",
+    "source": "Ralph Waldo Emerson"
+  },
+  {
+    "id": 60,
+    "text": "Science does not know its debt to imagination.",
+    "source": "Ralph Waldo Emerson"
+  },
+  {
+    "id": 61,
+    "text": "If we could speed up our sense of time until thousands of years were speeding by in the wink of an eye, we would see nebulae burst into light, deliver themselves of a shower of stars, then fade back into darkness. As it is we see each nebula frozen at a stage in the process.",
+    "source": "Timothy Ferris"
+  },
+  {
+    "id": 62,
+    "text": "Nature uses only the longest threads to weave her patterns, so each small piece of her fabric reveals the organization of the entire tapestry.",
+    "source": "Richard Feynman"
+  },
+  {
+    "id": 63,
+    "text": "The present situation in physics is as if we know chess, but we don't know one or two rules.",
+    "source": "Richard Feynman"
+  },
+  {
+    "id": 64,
+    "text": "The best thing we're put here for's to see; The strongest thing that's given us to see with's a telescope. Someone in every town, seems to me, owes it to the town to keep one.",
+    "source": "Robert Frost"
+  },
+  {
+    "id": 65,
+    "text": "The Sun, with all the planets revolving around it, and depending on it, can still ripen a bunch of grapes as though it had nothing else in the universe to do.",
+    "source": "Galileo Galilei"
+  },
+  {
+    "id": 66,
+    "text": "All truths are easy to understand once they are discovered; the point is to discover them.",
+    "source": "Galileo Galilei"
+  },
+  {
+    "id": 67,
+    "text": "Science is an integral part of culture. It's not this foreign thing, done by an arcane priesthood. It's one of the glories of the human intellectual tradition.",
+    "source": "Stephen Jay Gould"
+  },
+  {
+    "id": 68,
+    "text": "The essence of mathematics is not to make simple things complicated but to make complicated things simple.",
+    "source": "S. Gudder"
+  },
+  {
+    "id": 69,
+    "text": "Discovery consists of seeing what everybody has seen and thinking what nobody has thought.",
+    "source": "Albert Gyorgyi"
+  },
+  {
+    "id": 70,
+    "text": "Like buried treasures, the outposts of the universe have beckoned to the adventurous from immemorial times ...",
+    "source": "George Ellery Hale"
+  },
+  {
+    "id": 71,
+    "text": "One astronomer set up his equipment in an empty chicken coop to protect his instruments from the wind, and then spent most of the eclipse trying to shoo away the chickens, who dutifully reported to the roost when darkness fell.",
+    "source": "William Hartmann"
+  },
+  {
+    "id": 72,
+    "text": "My goal is simple. It is a complete understanding of the universe, why it is as it is and why it exists at all.",
+    "source": "Stephen Hawking"
+  },
+  {
+    "id": 73,
+    "text": "The future just ain't what it use to be and what's more it never was.",
+    "source": "Lee Hays"
+  },
+  {
+    "id": 74,
+    "text": "The exact sciences also start from the assumption that in the end it will always be possible to understand nature, even in every new field of experience, but that we may make no a priori assumptions about the meaning of the word understand.",
+    "source": "Heisenberg"
+  },
+  {
+    "id": 75,
+    "text": "By getting to smaller and smaller units, we do not come to fundamental or indivisible units. But we do come to a point where further division has no meaning.",
+    "source": "W. Heisenberg"
+  },
+  {
+    "id": 76,
+    "text": "What we observe is not nature itself, but nature exposed to our method of questioning.",
+    "source": "Werner Heisenberg"
+  },
+  {
+    "id": 77,
+    "text": "I have looked farther into space than ever a human being did before me.",
+    "source": "William Herschel"
+  },
+  {
+    "id": 78,
+    "text": "Suddenly I saw a meteor go by underneath me.",
+    "source": "Jeff Hoffman"
+  },
+  {
+    "id": 79,
+    "text": "The Sun, the stars and the seasons as they pass, some can gaze upon these with no strain of fear.",
+    "source": "Horace"
+  },
+  {
+    "id": 80,
+    "text": "Observations always involve theory.",
+    "source": "Edwin Hubble"
+  },
+  {
+    "id": 81,
+    "text": "Equipped with his five senses, man explores the universe around him and calls the adventure Science.",
+    "source": "Edwin Hubble"
+  },
+  {
+    "id": 82,
+    "text": "It is remarkable that the elements diffused through the host of stars are some of those most closely connected with the living organisms of our globe.",
+    "source": "W. Huggins"
+  },
+  {
+    "id": 83,
+    "text": "May it not be that the brighter stars are like our Sun, the upholding and energizing centers of systems of living beings?",
+    "source": "William Huggins"
+  },
+  {
+    "id": 84,
+    "text": "Where the telescope ends the microscope begins. Which of the two has the grander view?",
+    "source": "Victor Hugo"
+  },
+  {
+    "id": 85,
+    "text": "Research is formalized curiosity.",
+    "source": "Zora Neale Hurston"
+  },
+  {
+    "id": 86,
+    "text": "It is the first duty of a hypothesis to be intelligible.",
+    "source": "Thomas Henry Huxley"
+  },
+  {
+    "id": 87,
+    "text": "Science is simply common sense at its best, that is, rigidly accurate in observation, and merciless to fallacy in logic.",
+    "source": "Thomas Henry Huxley"
+  },
+  {
+    "id": 88,
+    "text": "You can't improve what you don't measure.",
+    "source": "Michael Hyatt"
+  },
+  {
+    "id": 89,
+    "text": "The universe seems to me infinitely strange and foreign. At such a moment I gaze upon it with a mixture of anguish and euphoria; separate from the universe, as though placed at a certain distance outside it; I look and I see pictures, creatures that move in a kind of timeless time and spaceless space, emitting sounds that are a kind of language I no longer understand or ever register.",
+    "source": "Eugene Ionesco"
+  },
+  {
+    "id": 90,
+    "text": "The universe is populated by innumerable suns, innumerable earths, and perhaps, innumerable forms of life. That thought expresses the essence of the Copernican revolution. No revelation more striking has ever come from the scientific mind.",
+    "source": "Robert Jastrow"
+  },
+  {
+    "id": 91,
+    "text": "Anyone who has lived through an English winter can see the point of building Stonehenge to make the Sun come back.",
+    "source": "Alison Jolly"
+  },
+  {
+    "id": 92,
+    "text": "Research is wonder.",
+    "source": "Steve Jones"
+  },
+  {
+    "id": 93,
+    "text": "He showed me a little thing, the quantity of a hazel nut, in the palm of my hand; and it was as round as a ball. I looked thereupon with the eye of my understanding, and thought; \"What may this be?\" And it was answered generally thus: It is all that is made.",
+    "source": "St. Juliana"
+  },
+  {
+    "id": 94,
+    "text": "The infinitude of creation is great enough to make a world, or a Milky Way of worlds, look in comparison with it what a flower or an insect does in comparison with the Earth.",
+    "source": "Immanuel Kant"
+  },
+  {
+    "id": 95,
+    "text": "Eyesight should learn from reason.",
+    "source": "Johanne Kepler"
+  },
+  {
+    "id": 96,
+    "text": "There will certainly be no lack of human pioneers when we have mastered the art of flight ... Let us create vessels and sails justed to the heavenly ether, and there will be plenty of people unafraid of the empty wastes. In the meantime we shall prepare, for the brave sky-travelers, maps of the celestial bodies.",
+    "source": "Johannes Kepler"
+  },
+  {
+    "id": 97,
+    "text": "Why are things as they are and not otherwise?",
+    "source": "Johannes Kepler"
+  },
+  {
+    "id": 98,
+    "text": "Newton was not the first of the age of reason, he was the last of the magicians.",
+    "source": "John Keynes"
+  },
+  {
+    "id": 99,
+    "text": "I learned to make my mind large, as the universe is large, so that there is room for paradoxes.",
+    "source": "Maxine Hong Kingston"
+  },
+  {
+    "id": 100,
+    "text": "It is not easy to describe the sea with the mouth.",
+    "source": "Kokyu"
+  },
+  {
+    "id": 101,
+    "text": "Many who have had an opportunity of knowing any more about mathematics confuse it with arithmetic, and consider it an arid science. In reality, however, it is a science which requires a great amount of imagination.",
+    "source": "Sonya Kovalevsky"
+  },
+  {
+    "id": 102,
+    "text": "I consider nature a vast chemical laboratory in which all kinds of composition and decompositions are formed.",
+    "source": "Antoine Lavoisier"
+  },
+  {
+    "id": 103,
+    "text": "It is impossible to disassociate language from science ... To call for a concept, a word is needed.",
+    "source": "Antoine Lavoisier"
+  },
+  {
+    "id": 104,
+    "text": "The scientific mind does not so much provide the right answers as ask the right questions.",
+    "source": "Claude Levi-Strauss"
+  },
+  {
+    "id": 105,
+    "text": "I know of nothing so pleasant to minds as the discovery of anything which is at once new and valuable; for nothing which so lightens and sweetens toil, as the hopeful pursuit of such discovery.",
+    "source": "Abraham Lincoln"
+  },
+  {
+    "id": 106,
+    "text": "Torrent of light and river of air, Along whose bed the glimmering stars are seen, Like gold and silver sands in some ravine Where mountain streams have left their channels bare!",
+    "source": "H.W. Longfellow (the Milky Way)"
+  },
+  {
+    "id": 107,
+    "text": "How is it that the sky feeds the stars?",
+    "source": "Lucretius"
+  },
+  {
+    "id": 108,
+    "text": "Knowledge advances by steps and not by leaps.",
+    "source": "Lord Macaulay"
+  },
+  {
+    "id": 109,
+    "text": "See the world as it truly is, small and blue, beautiful in that eternal silence where it floats.",
+    "source": "Archibald Macleish"
+  },
+  {
+    "id": 110,
+    "text": "I must go down to the seas again, To the lonely sea and the sky. And all I want is a tall ship, And a star to steer her by.",
+    "source": "John Masefield"
+  },
+  {
+    "id": 111,
+    "text": "Time begins from some place Measured by the age of light. It began from the furthest thing We see flicker in the night.",
+    "source": "Art Mason"
+  },
+  {
+    "id": 112,
+    "text": "If I have seen further, it is by standing on the shoulders of giants.",
+    "source": "Isaac Newton"
+  },
+  {
+    "id": 113,
+    "text": "Never make an obtuse observation about a triangle. It just isn’\t right.",
+    "source": "Bill Nye"
+  },
+  {
+    "id": 114,
+    "text": "The cure for boredom is curiosity. There is no cure for curiosity.",
+    "source": "Ellen Parr"
+  },
+  {
+    "id": 115,
+    "text": "The universe is asymmetric and I am persuaded that life, as it is known to us, is a direct result of the asymmetry of the universe or of its indirect consequences. The universe is asymmetric.",
+    "source": "Louis Pasteur"
+  },
+  {
+    "id": 116,
+    "text": "The most remarkable discovery made by scientists is science itself.",
+    "source": "Gerald Piel"
+  },
+  {
+    "id": 117,
+    "text": "Experimenters are the shock troops of science.",
+    "source": "Max Planck"
+  },
+  {
+    "id": 118,
+    "text": "I raised the visor on my helmet cover and looked out to try to identify constellations. As I looked out into space, I was overwhelmed by the darkness. I felt the flesh crawl on my back and the hair rise on my neck.",
+    "source": "William Pogue"
+  },
+  {
+    "id": 119,
+    "text": "Science is built up with facts, as a house is with stones. But a collection of facts is no more a science than a heap of stones is a house.",
+    "source": "Jules Henri Poincaré"
+  },
+  {
+    "id": 120,
+    "text": "Beauty in mathematics is seeing the truth without effort.",
+    "source": "George Polya"
+  },
+  {
+    "id": 121,
+    "text": "It is through science that we prove, but through intuition that we discover.",
+    "source": "Henri Ponicare"
+  },
+  {
+    "id": 122,
+    "text": "Our knowledge can only be finite, while our ignorance must necessarily be infinite.",
+    "source": "Sir Karl Popper"
+  },
+  {
+    "id": 123,
+    "text": "Science is not about control. It is about cultivating a perpetual condition of wonder in the face of something that forever grows one step richer and subtler than our latest theory about it. It is about reverence, not mastery.",
+    "source": "Richard Powers"
+  },
+  {
+    "id": 124,
+    "text": "The real voyage of discovery consists not in seeking new landscapes but in having new eyes.",
+    "source": "Marcel Proust"
+  },
+  {
+    "id": 125,
+    "text": "That is the spiral galaxy in Andromeda. It is as large as our Milky Way. It is one of a hundred million galaxies. It consists of one hundred billion suns. Now I think we are small enough.",
+    "source": "Franklin D. Roosevelt"
+  },
+  {
+    "id": 126,
+    "text": "The work of science is to substitute facts for appearances, and demonstrations for impressions.",
+    "source": "John Ruskin"
+  },
+  {
+    "id": 127,
+    "text": "Science is a way of thinking much more than it is a body of facts.",
+    "source": "Carl Sagan"
+  },
+  {
+    "id": 128,
+    "text": "The cosmos is also within us. We're made of star stuff.",
+    "source": "Carl Sagan"
+  },
+  {
+    "id": 129,
+    "text": "Extraordinary claims require extraordinary evidence.",
+    "source": "Carl Sagan"
+  },
+  {
+    "id": 130,
+    "text": "What people think of as the moment of discovery is really the disovery of the question.",
+    "source": "Jonas Salk"
+  },
+  {
+    "id": 131,
+    "text": "The true scientist never loses the faculty of amazement. It is the essence of his being.",
+    "source": "Hans Selye"
+  },
+  {
+    "id": 132,
+    "text": "The time will come when diligent research over long periods will bring to light things which now lie hidden. A single lifetime, even though entirely devoted to the sky, would not be enough for the investigation of so vast a subject ... And so this knowledge will be unfolded only through long successive ages. There will come a time when our descendants will be amazed that we did not know things that are so plain to them ... Many discoveries are reserved for ages still to come, when memory of us will have been effaced.",
+    "source": "Seneca"
+  },
+  {
+    "id": 133,
+    "text": "I could be bound in a nut shell and count myself a king of infinite space.",
+    "source": "William Shakespeare (Hamlet)"
+  },
+  {
+    "id": 134,
+    "text": "The number of those seen by the naked eye at once is seldom above a thousand; though from their scintillation, and the indistinct manner in which they are viewed, they appear to be almost infinite.",
+    "source": "W.H. Smyth"
+  },
+  {
+    "id": 135,
+    "text": "The longer the island of knowledge the longer the shoreline of wonder.",
+    "source": "Ralph W. Sockman"
+  },
+  {
+    "id": 136,
+    "text": "Wisdom begins in wonder.",
+    "source": "Socrates"
+  },
+  {
+    "id": 137,
+    "text": "A discovery is said to be an accident meeting a prepared mind.",
+    "source": "Albert Szent-Gyorgyi"
+  },
+  {
+    "id": 138,
+    "text": "Many a night from yonder ivied casement, Ere I went to rest, Did I look on great Orion, Sloping slowly to the west.",
+    "source": "Tennyson"
+  },
+  {
+    "id": 139,
+    "text": "Many a night I saw the Pleiades, Rising thro' the shade, Glitter like a swarm of fire-flies, Tangled in a silver braid.",
+    "source": "Tennyson"
+  },
+  {
+    "id": 140,
+    "text": "They toiled and built a thousand years In love's all powerful might; And so the Milky Way was made A starry bridge of light.",
+    "source": "Satires Tupelos"
+  },
+  {
+    "id": 141,
+    "text": "There are too many stars in some places and not enough in others.",
+    "source": "Mark Twain"
+  },
+  {
+    "id": 142,
+    "text": "There is something fascinating about science. One gets such wholesale returns of conjecture out of such a trifling investment of fact.",
+    "source": "Mark Twain (Life on the Mississippi)"
+  },
+  {
+    "id": 143,
+    "text": "The outcome of any serious research can only be to make two questions grow where only one grew before.",
+    "source": "Thorstein Veblen"
+  },
+  {
+    "id": 144,
+    "text": "Science, my lad, is made up of mistakes, but they are mistakes which it is useful to make, because they lead little by little to the truth.",
+    "source": "Jules Verne"
+  },
+  {
+    "id": 145,
+    "text": "Research is what I'm doing when I don't know what I'm doing.",
+    "source": "Wernher von Braun"
+  },
+  {
+    "id": 146,
+    "text": "Both science and art have to do with ordered complexity.",
+    "source": "Lancelot Law White"
+  },
+  {
+    "id": 147,
+    "text": "Technology shapes society and society shapes technology.",
+    "source": "Robert W. White"
+  }
 ]
