@@ -1,34 +1,50 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import { getRandomQuoteSet, Quote } from "@/lib/quotes";
-import { RefreshCw, Layers, Cpu, Move } from "lucide-react";
+import { RefreshCw, Layers, Cpu, Move, Sparkles } from "lucide-react";
 
 interface NodeData {
   id: string;
-  nodeType: "input" | "synapse" | "inference" | "synthesis" | "output";
+  nodeType: "input" | "synapse" | "inference" | "synthesis";
   tag: string;
   role: string;
   quote: Quote;
-  x: number; // in percentage of viewBox width (0 to 100)
-  y: number; // in percentage of viewBox height (0 to 100)
-  widthPct: number;
-  heightPct: number;
+  x: number; // in percentage of container width (0 to 100)
+  y: number; // in percentage of container height (0 to 100)
   color: string;
 }
 
 interface Connection {
   fromId: string;
   toId: string;
-  color?: string;
+  color: string;
+}
+
+interface SplineConnection {
+  id: string;
+  fromId: string;
+  toId: string;
+  color: string;
+  pathData: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
 
 const DEFAULT_CONNECTIONS: Connection[] = [
-  { fromId: "node-0", toId: "node-3", color: "#93C5FD" },
-  { fromId: "node-0", toId: "node-2", color: "#C084FC" },
-  { fromId: "node-1", toId: "node-2", color: "#60A5FA" },
-  { fromId: "node-2", toId: "node-4", color: "#A78BFA" },
-  { fromId: "node-3", toId: "node-4", color: "#38BDF8" },
+  { fromId: "node-0", toId: "node-3", color: "#818CF8" }, // PROMPT_01 -> INFERENCE_04
+  { fromId: "node-0", toId: "node-2", color: "#C084FC" }, // PROMPT_01 -> SYNAPSE_03
+  { fromId: "node-1", toId: "node-2", color: "#38BDF8" }, // CONTEXT_02 -> SYNAPSE_03
+  { fromId: "node-3", toId: "node-4", color: "#F472B6" }, // INFERENCE_04 -> SYNTHESIS_05
+  { fromId: "node-2", toId: "node-4", color: "#A78BFA" }, // SYNAPSE_03 -> SYNTHESIS_05
 ];
 
 const NODE_PRESETS: {
@@ -44,44 +60,44 @@ const NODE_PRESETS: {
     tag: "PROMPT_01",
     role: "LATENT INPUT",
     color: "#60A5FA",
-    defaultX: 8,
-    defaultY: 15,
+    defaultX: 5,
+    defaultY: 10,
   },
   {
     nodeType: "input",
     tag: "CONTEXT_02",
     role: "SEMANTIC CONTEXT",
     color: "#38BDF8",
-    defaultX: 6,
-    defaultY: 60,
+    defaultX: 5,
+    defaultY: 56,
   },
   {
     nodeType: "synapse",
     tag: "SYNAPSE_03",
     role: "NEURAL ATTENTION",
     color: "#A78BFA",
-    defaultX: 38,
-    defaultY: 66,
+    defaultX: 37,
+    defaultY: 56,
   },
   {
     nodeType: "inference",
     tag: "INFERENCE_04",
     role: "NEURAL DECODER",
     color: "#C084FC",
-    defaultX: 65,
-    defaultY: 16,
+    defaultX: 37,
+    defaultY: 10,
   },
   {
     nodeType: "synthesis",
     tag: "SYNTHESIS_05",
     role: "MANIFESTED OUTPUT",
     color: "#F472B6",
-    defaultX: 68,
-    defaultY: 62,
+    defaultX: 69,
+    defaultY: 33,
   },
 ];
 
-function generateNodes(): NodeData[] {
+function generateInitialNodes(): NodeData[] {
   const randomQuotes = getRandomQuoteSet(5);
   return NODE_PRESETS.map((preset, idx) => ({
     id: `node-${idx}`,
@@ -89,115 +105,218 @@ function generateNodes(): NodeData[] {
     tag: preset.tag,
     role: preset.role,
     color: preset.color,
-    quote: randomQuotes[idx] || { id: idx + 1, text: "Thinking in probabilities...", source: "Unknown" },
+    quote: randomQuotes[idx] || {
+      id: idx + 1,
+      text: "Thinking in probabilities...",
+      source: "Unknown",
+    },
     x: preset.defaultX,
     y: preset.defaultY,
-    widthPct: 26,
-    heightPct: 24,
   }));
 }
 
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export const QuoteNodeGraph: React.FC = () => {
-  const [nodes, setNodes] = useState<NodeData[]>(() => generateNodes());
+  const [nodes, setNodes] = useState<NodeData[]>(() => generateInitialNodes());
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
-  const [dragStartPos, setDragStartPos] = useState<{ clientX: number; clientY: number; nodeX: number; nodeY: number }>({
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [pulseKey, setPulseKey] = useState(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  const [containerSize, setContainerSize] = useState<{ width: number; height: number }>({
+    width: 1000,
+    height: 650,
+  });
+  const [connections, setConnections] = useState<SplineConnection[]>([]);
+
+  const dragStartPos = useRef<{
+    clientX: number;
+    clientY: number;
+    nodeX: number;
+    nodeY: number;
+  }>({
     clientX: 0,
     clientY: 0,
     nodeX: 0,
     nodeY: 0,
   });
-  const [pulseKey, setPulseKey] = useState(0);
 
-  // Re-seed quotes randomly
-  const shuffleQuotes = useCallback(() => {
-    setNodes(generateNodes());
-    setPulseKey((k) => k + 1);
-  }, []);
+  // Calculate pixel-perfect spline paths connecting socket pins
+  const updateConnections = useCallback(() => {
+    if (!containerRef.current) return;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    if (containerRect.width === 0 || containerRect.height === 0) return;
 
-  // Pointer drag interaction handlers
-  const handlePointerDown = (e: React.PointerEvent, id: string) => {
-    e.stopPropagation();
-    const node = nodes.find((n) => n.id === id);
-    if (!node) return;
-
-    setDragStartPos({
-      clientX: e.clientX,
-      clientY: e.clientY,
-      nodeX: node.x,
-      nodeY: node.y,
+    setContainerSize({
+      width: containerRect.width,
+      height: containerRect.height,
     });
-    setActiveDragId(id);
-  };
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!activeDragId) return;
+    const calculated: SplineConnection[] = [];
 
-      const container = e.currentTarget.getBoundingClientRect();
-      const deltaX = ((e.clientX - dragStartPos.clientX) / container.width) * 100;
-      const deltaY = ((e.clientY - dragStartPos.clientY) / container.height) * 100;
+    for (let i = 0; i < DEFAULT_CONNECTIONS.length; i++) {
+      const conn = DEFAULT_CONNECTIONS[i];
+      const fromEl = nodeRefs.current.get(conn.fromId);
+      const toEl = nodeRefs.current.get(conn.toId);
 
-      const newX = Math.max(2, Math.min(72, dragStartPos.nodeX + deltaX));
-      const newY = Math.max(4, Math.min(74, dragStartPos.nodeY + deltaY));
+      if (!fromEl || !toEl) continue;
 
-      setNodes((prev) =>
-        prev.map((n) => (n.id === activeDragId ? { ...n, x: newX, y: newY } : n))
-      );
-    },
-    [activeDragId, dragStartPos]
-  );
+      const fromRect = fromEl.getBoundingClientRect();
+      const toRect = toEl.getBoundingClientRect();
 
-  const handlePointerUp = useCallback(() => {
-    setActiveDragId(null);
-  }, []);
+      // Right pin of fromNode (exact center of output socket)
+      const x1 = fromRect.right - containerRect.left;
+      const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
 
-  // SVG Coordinates calculation in 1000x650 coordinate space
-  const splinePaths = useMemo(() => {
-    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+      // Left pin of toNode (exact center of input socket)
+      const x2 = toRect.left - containerRect.left;
+      const y2 = toRect.top + toRect.height / 2 - containerRect.top;
 
-    return DEFAULT_CONNECTIONS.map((conn, idx) => {
-      const from = nodeMap.get(conn.fromId);
-      const to = nodeMap.get(conn.toId);
+      // Smooth cubic Bezier curvature calculation
+      const dx = x2 - x1;
+      const curvature = Math.max(Math.abs(dx) * 0.45, 45);
 
-      if (!from || !to) return null;
-
-      // Start: Right port of fromNode in 0-1000 and 0-650 viewBox space
-      const x1 = (from.x + from.widthPct) * 10;
-      const y1 = (from.y + from.heightPct / 2) * 6.5;
-
-      // End: Left port of toNode in viewBox space
-      const x2 = to.x * 10;
-      const y2 = (to.y + to.heightPct / 2) * 6.5;
-
-      // Cubic Bezier curvature
-      const dx = Math.abs(x2 - x1);
-      const curvature = Math.max(dx * 0.55, 60);
-
-      const c1x = x1 + curvature;
+      const c1x = x1 + (dx >= 0 ? curvature : curvature * 0.7);
       const c1y = y1;
-      const c2x = x2 - curvature;
+      const c2x = x2 - (dx >= 0 ? curvature : curvature * 0.7);
       const c2y = y2;
 
       const pathData = `M ${x1} ${y1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x2} ${y2}`;
 
-      return {
-        id: `spline-${idx}`,
+      calculated.push({
+        id: `conn-${conn.fromId}-${conn.toId}-${i}`,
+        fromId: conn.fromId,
+        toId: conn.toId,
+        color: conn.color,
         pathData,
-        color: conn.color || "#93C5FD",
         x1,
         y1,
         x2,
         y2,
-      };
-    }).filter(Boolean);
+      });
+    }
+
+    setConnections(calculated);
+  }, []);
+
+  // Synchronously compute connections before browser paint
+  useIsomorphicLayoutEffect(() => {
+    updateConnections();
+  }, [nodes, updateConnections]);
+
+  // Keep connections locked onto pins during window resize or content shifts
+  useEffect(() => {
+    const handleResize = () => {
+      updateConnections();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    const observer = new ResizeObserver(() => {
+      updateConnections();
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    nodeRefs.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
+    };
+  }, [updateConnections]);
+
+  // Re-seed quotes randomly while preserving node positions
+  const shuffleQuotes = useCallback(() => {
+    setIsShuffling(true);
+    const currentIds = nodes.map((n) => n.quote.id);
+    const newQuotes = getRandomQuoteSet(nodes.length, currentIds);
+
+    setNodes((prevNodes) =>
+      prevNodes.map((node, idx) => ({
+        ...node,
+        quote: newQuotes[idx] || node.quote,
+      }))
+    );
+    setPulseKey((k) => k + 1);
+
+    setTimeout(() => {
+      setIsShuffling(false);
+    }, 450);
   }, [nodes]);
+
+  // Pointer drag interaction handlers with pointer capture
+  const handlePointerDown = (
+    e: React.PointerEvent<HTMLDivElement>,
+    id: string
+  ) => {
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+
+    e.stopPropagation();
+    const node = nodes.find((n) => n.id === id);
+    if (!node) return;
+
+    dragStartPos.current = {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      nodeX: node.x,
+      nodeY: node.y,
+    };
+    setActiveDragId(id);
+
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Ignored if pointer capture isn't supported on device
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!activeDragId || !containerRef.current) return;
+
+    const container = containerRef.current.getBoundingClientRect();
+    if (container.width === 0 || container.height === 0) return;
+
+    const deltaX =
+      ((e.clientX - dragStartPos.current.clientX) / container.width) * 100;
+    const deltaY =
+      ((e.clientY - dragStartPos.current.clientY) / container.height) * 100;
+
+    const newX = Math.max(1, Math.min(76, dragStartPos.current.nodeX + deltaX));
+    const newY = Math.max(2, Math.min(76, dragStartPos.current.nodeY + deltaY));
+
+    setNodes((prev) =>
+      prev.map((n) =>
+        n.id === activeDragId ? { ...n, x: newX, y: newY } : n
+      )
+    );
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (activeDragId) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        // Ignored if pointer capture wasn't held
+      }
+      setActiveDragId(null);
+    }
+  };
 
   return (
     <div
+      ref={containerRef}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
-      className="relative w-full h-[85vh] max-h-[850px] min-h-[580px] rounded-xl border border-muted/25 bg-[#05070D]/90 backdrop-blur-xl overflow-hidden select-none shadow-2xl"
+      className="relative w-full h-[85vh] max-h-[850px] min-h-[580px] rounded-xl border border-muted/25 bg-[#05070D]/90 backdrop-blur-xl overflow-hidden select-none shadow-2xl touch-none"
     >
       {/* Blueprint Grid Background Pattern */}
       <div
@@ -215,8 +334,8 @@ export const QuoteNodeGraph: React.FC = () => {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-blue-900/15 via-purple-900/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       {/* Top Header Toolbar */}
-      <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-20 pointer-events-none">
-        <div className="flex items-center gap-3 bg-black/60 border border-muted/30 px-3.5 py-1.5 rounded-md backdrop-blur-md">
+      <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-40 pointer-events-none">
+        <div className="flex items-center gap-3 bg-black/70 border border-muted/30 px-3.5 py-1.5 rounded-md backdrop-blur-md">
           <Layers className="w-3.5 h-3.5 text-accent animate-pulse" />
           <span className="text-xs font-mono tracking-widest text-foreground font-semibold">
             NODE GRAPH PRO // SYNAPSE GRAPH
@@ -227,111 +346,110 @@ export const QuoteNodeGraph: React.FC = () => {
 
         <div className="flex items-center gap-3 pointer-events-auto">
           <button
+            type="button"
             onClick={shuffleQuotes}
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-background/80 hover:bg-foreground hover:text-background border border-muted/30 text-xs font-mono tracking-wider text-silver transition-all duration-200 group shadow-sm active:scale-95 cursor-pointer"
             title="Randomize connected quotes"
           >
-            <RefreshCw className="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-500" />
-            <span>SHUFFLE QUOTES</span>
+            <RefreshCw
+              className={`w-3.5 h-3.5 transition-transform duration-500 ${
+                isShuffling ? "animate-spin text-accent" : "group-hover:rotate-180"
+              }`}
+            />
+            <span>{isShuffling ? "SHUFFLING..." : "SHUFFLE QUOTES"}</span>
           </button>
         </div>
       </div>
 
-      {/* SVG Connecting Bezier Cables Layer (ViewBox 1000x650) */}
+      {/* SVG Connecting Synapse Strings (Pixel-exact coordinate space) */}
       <svg
-        viewBox="0 0 1000 650"
-        preserveAspectRatio="none"
         className="absolute inset-0 w-full h-full pointer-events-none z-10"
+        width={containerSize.width}
+        height={containerSize.height}
+        viewBox={`0 0 ${containerSize.width} ${containerSize.height}`}
       >
         <defs>
-          <filter id="glow-blur" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id="glow-blur" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
-        {splinePaths.map((spline) => {
-          if (!spline) return null;
-          return (
-            <g key={spline.id}>
-              {/* Soft background glow spline */}
-              <path
-                d={spline.pathData}
-                fill="none"
-                stroke={spline.color}
-                strokeWidth="6"
-                strokeOpacity="0.12"
-                strokeLinecap="round"
-              />
+        {connections.map((conn) => (
+          <g key={conn.id}>
+            {/* Outer soft ambient glow path */}
+            <path
+              d={conn.pathData}
+              fill="none"
+              stroke={conn.color}
+              strokeWidth="6"
+              strokeOpacity="0.18"
+              strokeLinecap="round"
+            />
 
-              {/* Main crisp connection wire */}
-              <path
-                d={spline.pathData}
-                fill="none"
-                stroke={spline.color}
-                strokeWidth="2.2"
-                strokeOpacity="0.75"
-                strokeLinecap="round"
-              />
+            {/* Main crisp connection wire */}
+            <path
+              d={conn.pathData}
+              fill="none"
+              stroke={conn.color}
+              strokeWidth="2.2"
+              strokeOpacity="0.85"
+              strokeLinecap="round"
+            />
 
-              {/* Animated Glowing Signal Pulses traveling along path */}
-              <circle r="4" fill="#FFFFFF" filter="url(#glow-blur)">
-                <animateMotion
-                  key={`pulse-${pulseKey}-${spline.id}`}
-                  path={spline.pathData}
-                  dur="3.2s"
-                  repeatCount="indefinite"
-                  rotate="auto"
-                />
-              </circle>
-
-              <circle r="2.5" fill={spline.color}>
-                <animateMotion
-                  key={`pulse2-${pulseKey}-${spline.id}`}
-                  path={spline.pathData}
-                  dur="3.2s"
-                  repeatCount="indefinite"
-                  rotate="auto"
-                />
-              </circle>
-
-              {/* Terminal Port Rings */}
-              <circle
-                cx={spline.x1}
-                cy={spline.y1}
-                r="4.5"
-                fill="#05070D"
-                stroke={spline.color}
-                strokeWidth="2"
+            {/* Primary glowing signal pulse traveling along path */}
+            <circle r="4" fill="#FFFFFF" filter="url(#glow-blur)">
+              <animateMotion
+                key={`pulse-${pulseKey}-${conn.id}`}
+                path={conn.pathData}
+                dur="2.8s"
+                repeatCount="indefinite"
+                rotate="auto"
               />
-              <circle
-                cx={spline.x2}
-                cy={spline.y2}
-                r="4.5"
-                fill="#05070D"
-                stroke={spline.color}
-                strokeWidth="2"
+            </circle>
+
+            {/* Secondary colored pulse trailing */}
+            <circle r="2.5" fill={conn.color}>
+              <animateMotion
+                key={`pulse2-${pulseKey}-${conn.id}`}
+                path={conn.pathData}
+                dur="2.8s"
+                repeatCount="indefinite"
+                rotate="auto"
               />
-            </g>
-          );
-        })}
+            </circle>
+          </g>
+        ))}
       </svg>
 
       {/* Draggable Workflow Quote Node Cards */}
-      <div className="relative w-full h-full z-20">
+      <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
         {nodes.map((node) => {
           const isDragging = activeDragId === node.id;
+          const hasIncoming = node.nodeType !== "input";
+          const hasOutgoing = node.nodeType !== "synthesis";
 
           return (
             <div
               key={node.id}
+              ref={(el) => {
+                if (el) {
+                  nodeRefs.current.set(node.id, el);
+                } else {
+                  nodeRefs.current.delete(node.id);
+                }
+              }}
               onPointerDown={(e) => handlePointerDown(e, node.id)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
               style={{
                 left: `${node.x}%`,
                 top: `${node.y}%`,
                 width: "min(300px, 28vw)",
+                minWidth: "220px",
               }}
-              className={`absolute cursor-grab active:cursor-grabbing transition-shadow duration-200 ${
+              className={`pointer-events-auto absolute cursor-grab active:cursor-grabbing transition-shadow duration-200 ${
                 isDragging ? "z-30 scale-[1.03]" : "z-20 hover:scale-[1.01]"
               }`}
             >
@@ -343,17 +461,31 @@ export const QuoteNodeGraph: React.FC = () => {
                     : "border-muted/35 hover:border-muted/70 shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
                 }`}
               >
-                {/* Left Connector Pin Handle */}
-                <div
-                  className="absolute -left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 bg-[#05070D] transition-transform duration-200 hover:scale-125"
-                  style={{ borderColor: node.color }}
-                />
+                {/* Left Connector Pin (Input Port Socket) */}
+                {hasIncoming && (
+                  <div
+                    className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 bg-[#05070D] flex items-center justify-center pointer-events-none z-10 transition-transform duration-200 group-hover:scale-110 shadow-sm"
+                    style={{ borderColor: node.color }}
+                  >
+                    <div
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: node.color }}
+                    />
+                  </div>
+                )}
 
-                {/* Right Connector Pin Handle */}
-                <div
-                  className="absolute -right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 bg-[#05070D] transition-transform duration-200 hover:scale-125"
-                  style={{ borderColor: node.color }}
-                />
+                {/* Right Connector Pin (Output Port Socket) */}
+                {hasOutgoing && (
+                  <div
+                    className="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 bg-[#05070D] flex items-center justify-center pointer-events-none z-10 transition-transform duration-200 group-hover:scale-110 shadow-sm"
+                    style={{ borderColor: node.color }}
+                  >
+                    <div
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: node.color }}
+                    />
+                  </div>
+                )}
 
                 {/* Card Header */}
                 <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-muted/20 text-xs font-mono">
@@ -374,14 +506,14 @@ export const QuoteNodeGraph: React.FC = () => {
 
                 {/* Card Body: Quote Text */}
                 <div className="space-y-2">
-                  <p className="text-xs sm:text-sm font-medium text-foreground leading-snug tracking-tight font-sans">
+                  <p className="text-xs sm:text-sm font-medium text-foreground leading-snug tracking-tight font-sans transition-opacity duration-300">
                     &ldquo;{node.quote.text}&rdquo;
                   </p>
 
                   {/* Card Footer: Metadata & Source Tag */}
                   <div className="flex items-center justify-between pt-2 text-[11px] font-mono text-silver">
                     <span
-                      className="px-2 py-0.5 rounded border border-muted/30 bg-muted/10 font-semibold tracking-wider"
+                      className="px-2 py-0.5 rounded border border-muted/30 bg-muted/10 font-semibold tracking-wider transition-colors duration-300"
                       style={{ color: node.color }}
                     >
                       {node.quote.source.toUpperCase()}
@@ -404,7 +536,10 @@ export const QuoteNodeGraph: React.FC = () => {
           <span>DRAG ANY NODE TO RE-ROUTE NEURAL PATHS</span>
         </div>
         <div className="hidden sm:flex items-center gap-4">
-          <span>{"[TOPOLOGY: 5 NODES // 5 ACTIVE SYNAPSES]"}</span>
+          <span className="flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-accent/80" />
+            <span>[TOPOLOGY: 5 NODES // 5 ACTIVE SYNAPSES]</span>
+          </span>
           <span>{"[DYNAMIC PER-LOAD RE-SEEDING]"}</span>
         </div>
       </div>
@@ -413,3 +548,4 @@ export const QuoteNodeGraph: React.FC = () => {
 };
 
 export default QuoteNodeGraph;
+
