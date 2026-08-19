@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useMusic } from "@/lib/music-context";
 import { getAssetPath } from "@/lib/utils";
@@ -20,6 +20,7 @@ import {
   Disc3,
   Sparkles,
   Radio,
+  Trash2,
 } from "lucide-react";
 
 export const DiscPlayer: React.FC = () => {
@@ -31,97 +32,71 @@ export const DiscPlayer: React.FC = () => {
     currentTime,
     duration,
     volume,
+    isMuted,
     isLoadingMeta,
+    showVideoDrawer,
+    setShowVideoDrawer,
     setVolume,
+    toggleMute,
     togglePlay,
     playTrackIndex,
     nextTrack,
     prevTrack,
     seek,
     addTrackFromUrl,
+    removeTrack,
   } = useMusic();
 
   const [inputUrl, setInputUrl] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [isHoveringVinyl, setIsHoveringVinyl] = useState(false);
-  const [prevVolume, setPrevVolume] = useState(0.8);
 
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
-
-  // Send control commands to YouTube iframe
-  const sendYouTubeCommand = useCallback(
-    (func: "playVideo" | "pauseVideo" | "stopVideo" | "setVolume" | "seekTo", args: unknown[] = []) => {
-      if (iframeRef.current && iframeRef.current.contentWindow) {
-        iframeRef.current.contentWindow.postMessage(
-          JSON.stringify({
-            event: "command",
-            func: func,
-            args: args,
-          }),
-          "*"
-        );
-      }
-    },
-    []
-  );
-
-  // Synchronize Play/Pause with YouTube
-  const handleTogglePlay = () => {
-    if (isPlaying) {
-      sendYouTubeCommand("pauseVideo");
-    } else {
-      sendYouTubeCommand("playVideo");
-    }
-    togglePlay();
-  };
-
-  // Synchronize volume with YouTube
-  const handleVolumeChange = (newVol: number) => {
-    setVolume(newVol);
-    sendYouTubeCommand("setVolume", [Math.round(newVol * 100)]);
-  };
-
-  const handleMuteToggle = () => {
-    if (volume > 0) {
-      setPrevVolume(volume);
-      handleVolumeChange(0);
-    } else {
-      handleVolumeChange(prevVolume || 0.8);
-    }
-  };
-
-  // Synchronize seek with YouTube
-  const handleSeek = (time: number) => {
-    seek(time);
-    sendYouTubeCommand("seekTo", [time, true]);
-  };
-
-  // Listen to YouTube postMessage events (onStateChange)
+  // Keyboard shortcuts (Space, Arrow keys, Mute)
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      try {
-        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        if (data?.event === "onStateChange") {
-          // YouTube State: 1 = Playing, 2 = Paused, 0 = Ended
-          if (data.info === 1 && !isPlaying) {
-            togglePlay();
-          } else if ((data.info === 2 || data.info === 0) && isPlaying) {
-            togglePlay();
-          }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          nextTrack();
+        } else {
+          seek(Math.min(duration || 180, currentTime + 5));
         }
-      } catch {
-        // Ignore non-JSON postMessages
+      } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          prevTrack();
+        } else {
+          seek(Math.max(0, currentTime - 5));
+        }
+      } else if (e.code === "ArrowUp") {
+        e.preventDefault();
+        setVolume(Math.min(1, volume + 0.05));
+      } else if (e.code === "ArrowDown") {
+        e.preventDefault();
+        setVolume(Math.max(0, volume - 0.05));
+      } else if (e.key === "m" || e.key === "M") {
+        toggleMute();
       }
     };
 
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [isPlaying, togglePlay]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [togglePlay, nextTrack, prevTrack, seek, duration, currentTime, setVolume, volume, toggleMute]);
 
   // Format seconds to mm:ss
   const formatTime = (secs: number) => {
-    if (isNaN(secs) || secs < 0) return "0:00";
+    if (isNaN(secs) || secs < 0 || !isFinite(secs)) return "0:00";
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
     return `${m}:${s < 10 ? "0" : ""}${s}`;
@@ -144,13 +119,11 @@ export const DiscPlayer: React.FC = () => {
     const urlToAdd = inputUrl.trim();
     setInputUrl("");
     await addTrackFromUrl(urlToAdd);
-    if (urlToAdd.includes("youtube.com") || urlToAdd.includes("youtu.be")) {
-      setShowVideoPlayer(true);
-    }
   };
 
   const activeArtwork = getAssetPath(currentTrack?.coverUrl || "/images/disc-infinity.png");
   const progressRatio = duration > 0 ? Math.min(1, Math.max(0, currentTime / duration)) : 0;
+  const currentVol = isMuted ? 0 : volume;
 
   return (
     <div className="relative w-full min-h-screen bg-[#050508] text-white flex flex-col justify-between items-center py-6 px-4 sm:px-8 select-none overflow-x-hidden">
@@ -268,7 +241,7 @@ export const DiscPlayer: React.FC = () => {
 
           {/* 12" Vinyl Platter with Authentic Grooves & Center Artwork */}
           <div
-            onClick={handleTogglePlay}
+            onClick={togglePlay}
             onMouseEnter={() => setIsHoveringVinyl(true)}
             onMouseLeave={() => setIsHoveringVinyl(false)}
             className={`group relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-full cursor-pointer transition-all duration-500 hover:scale-[1.02] active:scale-[0.99] shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(0,0,0,0.6)] ${
@@ -376,7 +349,7 @@ export const DiscPlayer: React.FC = () => {
               const rect = e.currentTarget.getBoundingClientRect();
               const clickX = e.clientX - rect.left;
               const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-              handleSeek(ratio * (duration || 180));
+              seek(ratio * (duration || 32));
             }}
             className="group relative w-full h-1.5 hover:h-2.5 rounded-full bg-zinc-800/90 hover:bg-zinc-700/80 transition-all cursor-pointer overflow-hidden"
           >
@@ -398,13 +371,13 @@ export const DiscPlayer: React.FC = () => {
           {/* Left Column: Sleek Volume Control */}
           <div className="flex items-center gap-2 justify-start">
             <button
-              onClick={handleMuteToggle}
+              onClick={toggleMute}
               className="text-zinc-400 hover:text-white transition-colors cursor-pointer p-1.5 rounded-full hover:bg-zinc-800/60"
-              title={volume === 0 ? "Unmute" : "Mute"}
+              title={currentVol === 0 ? "Unmute (M)" : "Mute (M)"}
             >
-              {volume === 0 ? (
-                <VolumeX className="w-4 h-4" />
-              ) : volume < 0.5 ? (
+              {currentVol === 0 ? (
+                <VolumeX className="w-4 h-4 text-red-400" />
+              ) : currentVol < 0.5 ? (
                 <Volume1 className="w-4 h-4" />
               ) : (
                 <Volume2 className="w-4 h-4" />
@@ -416,8 +389,8 @@ export const DiscPlayer: React.FC = () => {
                 min="0"
                 max="1"
                 step="0.01"
-                value={volume}
-                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                value={currentVol}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
                 className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white hover:accent-accent transition-all"
               />
             </div>
@@ -428,15 +401,15 @@ export const DiscPlayer: React.FC = () => {
             <button
               onClick={prevTrack}
               className="w-10 h-10 rounded-full border border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center shadow-sm cursor-pointer"
-              title="Previous Track"
+              title="Previous Track (Shift + Left)"
             >
               <SkipBack className="w-4 h-4" />
             </button>
 
             <button
-              onClick={handleTogglePlay}
+              onClick={togglePlay}
               className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-white text-black hover:bg-zinc-100 hover:scale-105 active:scale-95 transition-all duration-200 shadow-[0_0_25px_rgba(255,255,255,0.25)] flex items-center justify-center cursor-pointer group"
-              title={isPlaying ? "Pause" : "Play"}
+              title={isPlaying ? "Pause (Space)" : "Play (Space)"}
             >
               {isPlaying ? (
                 <Pause className="w-5 h-5 fill-current" />
@@ -448,26 +421,26 @@ export const DiscPlayer: React.FC = () => {
             <button
               onClick={nextTrack}
               className="w-10 h-10 rounded-full border border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center shadow-sm cursor-pointer"
-              title="Next Track"
+              title="Next Track (Shift + Right)"
             >
               <SkipForward className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Right Column: Video Toggle / Stream Indicator (Balances the Left Column) */}
+          {/* Right Column: Video Toggle / Stream Indicator */}
           <div className="flex items-center justify-end gap-2">
             {currentTrack.embedUrl ? (
               <button
-                onClick={() => setShowVideoPlayer(!showVideoPlayer)}
+                onClick={() => setShowVideoDrawer((prev) => !prev)}
                 className={`px-3 py-1.5 rounded-full border text-xs font-mono font-medium flex items-center gap-1.5 cursor-pointer transition-all duration-200 ${
-                  showVideoPlayer
+                  showVideoDrawer
                     ? "bg-red-500/20 text-red-400 border-red-500/40 shadow-[0_0_12px_rgba(239,68,68,0.2)]"
                     : "border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-400 hover:text-white"
                 }`}
-                title="Toggle YouTube Video Drawer"
+                title="Toggle Picture-in-Picture Video"
               >
                 <Tv className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{showVideoPlayer ? "HIDE VIDEO" : "SHOW VIDEO"}</span>
+                <span className="hidden sm:inline">{showVideoDrawer ? "HIDE VIDEO" : "SHOW VIDEO"}</span>
                 <span className="sm:hidden">VIDEO</span>
               </button>
             ) : (
@@ -479,23 +452,7 @@ export const DiscPlayer: React.FC = () => {
           </div>
         </div>
 
-        {/* Embedded YouTube Player Drawer */}
-        {currentTrack.embedUrl && (
-          <div
-            className={`w-full overflow-hidden rounded-2xl border border-zinc-800 bg-black/90 shadow-2xl transition-all duration-400 ${
-              showVideoPlayer ? "h-52 opacity-100 mt-2" : "h-0 opacity-0 pointer-events-none"
-            }`}
-          >
-            <iframe
-              ref={iframeRef}
-              src={currentTrack.embedUrl}
-              className="w-full h-full border-none"
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            />
-          </div>
-        )}
-
-        {/* Modern YouTube Link Input Form */}
+        {/* Modern YouTube or Audio Link Input Form */}
         <form onSubmit={handleAddLink} className="w-full space-y-2 mt-1">
           <div className="flex gap-2">
             <div className="relative flex-1 flex items-center">
@@ -506,10 +463,10 @@ export const DiscPlayer: React.FC = () => {
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
               </svg>
               <input
-                type="url"
+                type="text"
                 required
                 disabled={isLoadingMeta}
-                placeholder="Paste YouTube or YouTube Music URL..."
+                placeholder="Paste YouTube, YouTube Music, or direct audio link..."
                 value={inputUrl}
                 onChange={(e) => setInputUrl(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-xs font-mono bg-zinc-900/80 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-zinc-500 focus:bg-zinc-900 transition-all shadow-sm"
@@ -540,18 +497,37 @@ export const DiscPlayer: React.FC = () => {
         {tracks.length > 0 && (
           <div className="flex flex-wrap gap-2 justify-center max-w-lg pt-1">
             {tracks.map((t, idx) => (
-              <button
+              <div
                 key={t.id}
-                onClick={() => playTrackIndex(idx)}
-                className={`px-3 py-1 rounded-full text-xs font-mono transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                className={`group/chip relative flex items-center rounded-full text-xs font-mono transition-all duration-200 ${
                   currentTrackIndex === idx
                     ? "bg-zinc-200 text-black font-semibold shadow-[0_0_12px_rgba(255,255,255,0.2)] scale-105"
                     : "border border-zinc-800/80 bg-zinc-900/60 text-zinc-400 hover:text-white hover:bg-zinc-800/80"
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${currentTrackIndex === idx ? "bg-black" : "bg-zinc-600"}`} />
-                <span>{t.title.length > 20 ? `${t.title.slice(0, 20)}...` : t.title}</span>
-              </button>
+                <button
+                  onClick={() => playTrackIndex(idx)}
+                  className="px-3 py-1 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${currentTrackIndex === idx ? "bg-black" : "bg-zinc-600"}`} />
+                  <span>{t.title.length > 22 ? `${t.title.slice(0, 22)}...` : t.title}</span>
+                </button>
+
+                {tracks.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeTrack(idx);
+                    }}
+                    className={`pr-2 opacity-0 group-hover/chip:opacity-100 transition-opacity cursor-pointer ${
+                      currentTrackIndex === idx ? "text-zinc-700 hover:text-black" : "text-zinc-500 hover:text-red-400"
+                    }`}
+                    title="Remove Track"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         )}

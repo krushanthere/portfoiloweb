@@ -10,11 +10,44 @@ export interface ResolvedMusicMetadata {
 }
 
 /**
- * Automatically extracts YouTube video title, channel name, and high-res thumbnail.
+ * Cleanly formats a song title from a URL path.
+ */
+function cleanTitleFromUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const filename = pathname.split("/").pop() || "Audio Track";
+    const withoutExt = filename.replace(/\.[^/.]+$/, "");
+    const decoded = decodeURIComponent(withoutExt).replace(/[-_]/g, " ");
+    return decoded
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  } catch {
+    return "Custom Audio Track";
+  }
+}
+
+/**
+ * Automatically extracts YouTube video title, channel name, and high-res thumbnail,
+ * or parses direct audio streaming URLs.
  */
 export async function resolveMusicUrl(url: string): Promise<ResolvedMusicMetadata> {
   const u = url.trim();
-  const fallbackId = `yt-${Date.now()}`;
+  const fallbackId = `track-${Date.now()}`;
+
+  // Check for direct audio file formats (.mp3, .wav, .ogg, .m4a, .aac, .flac)
+  const isDirectAudio = /\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i.test(u) || u.startsWith("data:audio/");
+  if (isDirectAudio) {
+    return {
+      id: fallbackId,
+      title: cleanTitleFromUrl(u),
+      artist: "Direct Audio Stream",
+      coverUrl: "/images/disc-infinity.png",
+      type: "audio",
+      audioUrl: u,
+    };
+  }
 
   // Extract YouTube video ID
   let videoId = "";
@@ -38,7 +71,7 @@ export async function resolveMusicUrl(url: string): Promise<ResolvedMusicMetadat
   }
 
   if (videoId) {
-    const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&playsinline=1&controls=1`;
     const fallbackCover = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 
     try {
@@ -56,7 +89,7 @@ export async function resolveMusicUrl(url: string): Promise<ResolvedMusicMetadat
         };
       }
     } catch {
-      // Fallback
+      // Fallback to default YouTube metadata
     }
 
     return {
@@ -70,13 +103,25 @@ export async function resolveMusicUrl(url: string): Promise<ResolvedMusicMetadat
     };
   }
 
-  // Fallback if URL is not a standard YouTube link
+  // If unknown URL, treat as audio URL if it starts with http, or fallback to default track
+  if (u.startsWith("http://") || u.startsWith("https://")) {
+    return {
+      id: fallbackId,
+      title: cleanTitleFromUrl(u),
+      artist: "Web Audio Stream",
+      coverUrl: "/images/disc-infinity.png",
+      type: "audio",
+      audioUrl: u,
+    };
+  }
+
+  // Fallback default
   return {
     id: fallbackId,
     title: "Infinity (8th Anniversary)",
-    artist: "Free Fire",
+    artist: "Krushanta • Lo-Fi Beats",
     coverUrl: "/images/disc-infinity.png",
-    type: "youtube",
-    embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
+    type: "audio",
+    audioUrl: "/audio/infinity-lofi.wav",
   };
 }
